@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма відгуку</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Залиште свій відгук</h2>
+        <form id="reviewForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Ім'я:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="review">Текст відгуку:</label>
+                <textarea id="review" name="review" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="photo">Фото:</label>
+                <input type="file" id="photo" name="photo[]" multiple>
+            </div>
+            <button type="button" id="submitButton" class="btn">Надіслати відгук</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("submitButton").addEventListener("click", function() {
+            var fileInput = document.getElementById('photo');
+            var formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('review', document.getElementById('review').value);
+            
+            for (var i = 0; i < fileInput.files.length; i++) {
+                formData.append('photo[]', fileInput.files[i]);
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "https://af6zyvhgvneauaaexig3yfigau0ctbix.lambda-url.us-west-2.on.aws/");
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var messageContainer = document.createElement('div');
+                    messageContainer.textContent = "Відгук надіслано! Круто!";
+                    document.body.appendChild(messageContainer);
+                    document.getElementById("reviewForm").reset();
+                } else {
+                    alert("Помилка при надсиланні відгуку. Спробуйте ще раз.");
+                }
+            };
+            xhr.send(formData);
+        });
+    </script>
+</body>
+</html>
